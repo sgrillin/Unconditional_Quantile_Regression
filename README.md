@@ -14,7 +14,7 @@ $\text{RIF}(y; q_\tau) = q_\tau + \frac{\tau - \mathbb{1}\{y \leq q_\tau\}}{f_Y(
 
 Where:
 - $q_\tau$ is the $\tau$-th quantile of the outcome variable $Y$,
-- \( \mathbb{1}\{y \leq q_\tau\} \) is an indicator function for whether \( y \) is less than or equal to the quantile \( q_\tau \),
+- $\mathbb{1}\{y \leq q_\tau\}$ is an indicator function for whether \( y \) is less than or equal to the quantile $q_\tau$,
 - \( f_Y(q_\tau) \) is the density of the outcome variable \( Y \) at the quantile \( q_\tau \).
 
 This approach is called **Unconditional Quantile Regression (UQR)** because it directly targets changes in the marginal (unconditional) quantiles of \( Y \), unlike traditional quantile regressions, which model conditional quantiles.
