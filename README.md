@@ -1,4 +1,4 @@
-# Unconditional Quantile Regression (UQR) Project
+# Unconditional Quantile Regression (UQR)
 
 ## Project Overview
 
