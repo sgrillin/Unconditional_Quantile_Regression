@@ -8,7 +8,7 @@ This project implements the methodology proposed by **Sergio Firpo, Nicole M. Fo
 
 The paper proposes a new method to evaluate the impact of changes in explanatory variables on quantiles of the unconditional distribution of an outcome variable. The core idea is to compute the **Recentered Influence Function (RIF)** for the quantile of interest and then regress it on the covariates.
 
-The RIF for a quantile \( \tau \) is given by:
+The RIF for a quantile $\tau$ is given by:
 
 \[
 \text{RIF}(y; q_\tau) = q_\tau + \frac{\tau - \mathbb{1}\{y \leq q_\tau\}}{f_Y(q_\tau)}
