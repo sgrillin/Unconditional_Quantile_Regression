@@ -38,3 +38,12 @@ The project relies on the following Python packages:
 - `scipy`: For kernel density estimation.
 - `statsmodels`: For advanced statistical modeling and kernel density estimation.
 - `sklearn`: For running the linear regression model.
+
+---
+
+## Applications in the literature
+
+If you want to see an example of UQR, check out my 2020 co-authored paper: _"Unconditional quantile regression analysis of UK inbound tourist expenditures"_ with Sharma, Abhijit and Woodward, Richard (Economics Letters)
+Available at:
+
+https://bradscholars.brad.ac.uk/bitstream/handle/10454/17530/elmanuscriptR2.pdf?sequence=2&isAllowed=n
