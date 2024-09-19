@@ -38,8 +38,3 @@ The project relies on the following Python packages:
 - `scipy`: For kernel density estimation.
 - `statsmodels`: For advanced statistical modeling and kernel density estimation.
 - `sklearn`: For running the linear regression model.
-
-To install the required packages, run:
-
-```bash
-pip install numpy pandas scipy statsmodels scikit-learn
