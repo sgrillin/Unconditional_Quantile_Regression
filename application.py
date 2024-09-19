@@ -9,8 +9,8 @@ tips_data = sns.load_dataset('tips')
 y = tips_data['tip']  # Outcome variable (tip amount)
 X = pd.get_dummies(tips_data[['total_bill', 'day']], drop_first=True)  # Covariates: total bill and day of the week
 
-# Fit the RIF regression for the 25th percentile
-tau = 0.25
+# Fit the RIF regression for the median
+tau = 0.5
 rif_model = fit_rif_regression(y, X, tau)
 
 # Print the regression coefficients
@@ -28,3 +28,5 @@ for tau in deciles:
 
     # Print the regression coefficients
     print(f"RIF Regression Coefficients for {int(tau * 100)}th percentile:", rif_model.coef_)
+
+# Include plots, standard erros, bootstrap / sandwich and predict distribution

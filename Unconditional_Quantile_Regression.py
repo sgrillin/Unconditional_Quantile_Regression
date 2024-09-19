@@ -4,6 +4,7 @@ from sklearn.linear_model import LinearRegression
 from scipy.stats import gaussian_kde
 import statsmodels.api as sm
 
+# Add bootstrap SE
 
 def estimate_quantiles(y, tau):
     """Estimates the quantile tau of y"""
