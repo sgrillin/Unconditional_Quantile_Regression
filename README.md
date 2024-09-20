@@ -10,7 +10,7 @@ The paper proposes a new method to evaluate the impact of changes in explanatory
 
 The RIF for a quantile $\tau$ is given by:
 
-$\text{RIF}(y; q_\tau) = q_\tau + \frac{\tau - \mathbb{1}\{ y \leq q_\tau \} )}{f_Y(q_\tau)}$
+$\text{RIF}(y, q_{\tau}) = q_\tau + \frac{\tau - \mathbb{1}\{ y \leq q_\tau \} )}{f_Y(q_\tau)}$
 
 Where:
 - $q_\tau$ is the $\tau^{th}$ quantile of the outcome variable $Y$,
