@@ -26,3 +26,34 @@ results_median_bootstrap = pd.DataFrame({
     'Coefficient': coefficients_bootstrap,
     'Bootstrap SE': bootstrap_se})
 print(results_median_bootstrap)
+
+# Define deciles (0.1, 0.2, ..., 0.9)
+deciles = [i / 10 for i in range(1, 10)]
+
+# Create a list to store the results as dictionaries
+results_list = []
+
+# Loop through each decile and run RIF regression with bootstrapped SE
+for tau in deciles:
+    print(f"\nFitting RIF regression for the {int(tau * 100)}th percentile")
+
+    # Fit the RIF regression for bootstrapped standard errors
+    rifreg_bootstrap, bootstrap_se = fit_rif_regression(y, X, tau, error_type='bootstrap', n_bootstraps=1000)
+    coefficients_bootstrap = rifreg_bootstrap.params
+
+    # Store results for bootstrapped SE in the results list
+    for i, coef in enumerate(coefficients_bootstrap):
+        results_list.append({
+            'Quantile': f'{int(tau * 100)}th percentile',
+            'Coefficient': coef,
+            'Bootstrap SE': bootstrap_se[i]
+        })
+
+# Convert the list of results to a DataFrame using pd.concat
+results_df = pd.concat([pd.DataFrame([row]) for row in results_list], ignore_index=True)
+
+# Display the full results table
+print("\nAll Results (Coefficients and Bootstrapped Standard Errors by Quantile):")
+print(results_df)
+
+# Add plot and predict distribution
