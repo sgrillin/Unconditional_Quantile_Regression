@@ -1,32 +1,26 @@
-from Unconditional_Quantile_Regression import *
 import seaborn as sns
-import pandas as pd
+from Unconditional_Quantile_Regression import fit_rif_regression
 
 # Load the tips dataset
 tips_data = sns.load_dataset('tips')
 
 # Define the outcome variable (y) and the covariates (X)
-y = tips_data['tip']  # Outcome variable (tip amount)
+y = tips_data['tip'].values  # Outcome variable (tip amount)
 X = pd.get_dummies(tips_data[['total_bill', 'day']], drop_first=True)  # Covariates: total bill and day of the week
 
-# Fit the RIF regression for the median
+# Fit the RIF regression for the 50th percentile (median) with cluster-robust standard errors
 tau = 0.5
-rif_model = fit_rif_regression(y, X, tau)
+ols_model, cluster_robust_se = fit_rif_regression(y, X, tau, error_type='cluster', cluster_groups=tips_data['day'])
 
-# Print the regression coefficients
-print("RIF Regression Coefficients:", rif_model.coef_)
+# Print the coefficients and cluster-robust standard errors
+print("\nCluster-Robust Standard Errors:")
+for coef, se in zip(ols_model.params, cluster_robust_se):
+    print(f"Coefficient: {coef}, Standard Error: {se}")
 
-# Define the deciles (0.1, 0.2, ..., 0.9)
-deciles = [i / 10 for i in range(1, 10)]
+# Fit the RIF regression for the 50th percentile (median) with bootstrapped standard errors
+ols_model, bootstrap_se = fit_rif_regression(y, X, tau, error_type='bootstrap', n_bootstraps=1000)
 
-# Loop through each decile and run RIF regression
-for tau in deciles:
-    print(f"\nFitting RIF regression for the {int(tau * 100)}th percentile")
-
-    # Fit the RIF regression for the given decile (tau)
-    rif_model = fit_rif_regression(y, X, tau)
-
-    # Print the regression coefficients
-    print(f"RIF Regression Coefficients for {int(tau * 100)}th percentile:", rif_model.coef_)
-
-# Include plots, standard erros, bootstrap / sandwich and predict distribution
+# Print the coefficients and bootstrapped standard errors
+print("\nBootstrapped Standard Errors:")
+for coef, se in zip(ols_model.params, bootstrap_se):
+    print(f"Coefficient: {coef}, Standard Error: {se}")
