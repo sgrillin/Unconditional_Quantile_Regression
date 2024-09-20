@@ -27,7 +27,7 @@ def rif_quantile(y, tau):
     rif = q_tau + (tau - indicator) / f_q_tau
     return rif
 
-# Function to fit RIF regression with an option for cluster-robust or bootstrapped standard errors
+
 def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_bootstraps=1000):
     """
     Fit an OLS regression model for the RIF of a given quantile tau using statsmodels.
@@ -48,10 +48,10 @@ def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_boot
     rif_y = rif_quantile(y, tau)
 
     # Add a constant term to the model (intercept)
-    X = sm.add_constant(X)
+    X_const = sm.add_constant(X)
 
     # Fit OLS model using statsmodels
-    ols_model = sm.OLS(rif_y, X).fit()
+    ols_model = sm.OLS(rif_y, X_const).fit()
 
     # Handle standard error estimation based on the specified error type
     if error_type == 'cluster':
@@ -69,11 +69,17 @@ def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_boot
         for i in range(n_bootstraps):
             # Resample data with replacement
             bootstrap_indices = np.random.choice(range(n), size=n, replace=True)
+
+            # Resample the outcome (y) and covariates (X)
+            if isinstance(X, pd.DataFrame):
+                X_bootstrap = X.iloc[bootstrap_indices, :]
+            else:
+                X_bootstrap = X[bootstrap_indices]
+
             y_bootstrap = y[bootstrap_indices]
-            X_bootstrap = X[bootstrap_indices]
 
             # Fit OLS model on the bootstrap sample
-            bootstrap_model = sm.OLS(rif_quantile(y_bootstrap, tau), X_bootstrap).fit()
+            bootstrap_model = sm.OLS(rif_quantile(y_bootstrap, tau), sm.add_constant(X_bootstrap)).fit()
             bootstrap_coefs.append(bootstrap_model.params)
 
         # Convert the list of bootstrapped coefficients to a NumPy array
@@ -86,4 +92,3 @@ def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_boot
     else:
         # Default OLS model with regular standard errors
         return ols_model, ols_model.bse
-

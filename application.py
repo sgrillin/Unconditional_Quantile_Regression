@@ -10,17 +10,19 @@ X = pd.get_dummies(tips_data[['total_bill', 'day']], drop_first=True)  # Covaria
 
 # Fit the RIF regression for the 50th percentile (median) with cluster-robust standard errors
 tau = 0.5
-ols_model, cluster_robust_se = fit_rif_regression(y, X, tau, error_type='cluster', cluster_groups=tips_data['day'])
+median_rifreg = fit_rif_regression(y, X, tau)
+median_rifreg_cluster, cluster_robust_se = fit_rif_regression(y, X, tau, error_type='cluster', cluster_groups=tips_data['day'])
+median_rifreg_boostrap, bootstrap_se = fit_rif_regression(y, X, tau, error_type='bootstrap', n_bootstraps=1000)
 
-# Print the coefficients and cluster-robust standard errors
-print("\nCluster-Robust Standard Errors:")
-for coef, se in zip(ols_model.params, cluster_robust_se):
-    print(f"Coefficient: {coef}, Standard Error: {se}")
+# Get the coefficients and cluster-robust results from the model
+coefficients_cluster = median_rifreg_cluster.params
+results_median_cluster = pd.DataFrame({
+    'Coefficient': coefficients_cluster,
+    'Cluster-Robust SE': cluster_robust_se})
+print(results_median_cluster)
 
-# Fit the RIF regression for the 50th percentile (median) with bootstrapped standard errors
-ols_model, bootstrap_se = fit_rif_regression(y, X, tau, error_type='bootstrap', n_bootstraps=1000)
-
-# Print the coefficients and bootstrapped standard errors
-print("\nBootstrapped Standard Errors:")
-for coef, se in zip(ols_model.params, bootstrap_se):
-    print(f"Coefficient: {coef}, Standard Error: {se}")
+coefficients_bootstrap = median_rifreg_boostrap.params
+results_median_bootstrap = pd.DataFrame({
+    'Coefficient': coefficients_bootstrap,
+    'Bootstrap SE': bootstrap_se})
+print(results_median_bootstrap)
