@@ -28,7 +28,7 @@ def rif_quantile(y, tau):
     return rif
 
 
-def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_bootstraps=1000):
+def fit_rif_regression(y, X, tau, error_type='none', n_bootstraps=1000):
     """
     Fit an OLS regression model for the RIF of a given quantile tau using statsmodels.
 
@@ -36,13 +36,12 @@ def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_boot
         y: Outcome variable (array-like)
         X: Covariates (DataFrame or array-like)
         tau: Quantile (float)
-        error_type: Type of standard error estimation ('none', 'cluster', 'bootstrap')
-        cluster_groups: Grouping variable for cluster-robust standard errors (if error_type='cluster')
+        error_type: Type of standard error estimation ('none', 'huber-white', 'bootstrap')
         n_bootstraps: Number of bootstrap samples (if error_type='bootstrap')
 
     Returns:
         model: The fitted OLS model
-        se: Estimated standard errors (either cluster-robust, bootstrapped, or regular)
+        se: Estimated standard errors (either bootstrapped, Huber-White, or regular)
     """
     # Compute RIF-transformed outcome
     rif_y = rif_quantile(y, tau)
@@ -54,14 +53,7 @@ def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_boot
     ols_model = sm.OLS(rif_y, X_const).fit()
 
     # Handle standard error estimation based on the specified error type
-    if error_type == 'cluster':
-        if cluster_groups is None:
-            raise ValueError("cluster_groups must be provided for cluster-robust standard errors")
-        # Cluster-robust standard errors
-        robust_model = ols_model.get_robustcov_results(cov_type='cluster', groups=cluster_groups)
-        return ols_model, robust_model.bse
-
-    elif error_type == 'bootstrap':
+    if error_type == 'bootstrap':
         # Bootstrap standard errors
         bootstrap_coefs = []
         n = len(y)
@@ -88,6 +80,11 @@ def fit_rif_regression(y, X, tau, error_type='none', cluster_groups=None, n_boot
         # Standard errors are the standard deviation of the bootstrap estimates
         bootstrap_se = np.std(bootstrap_coefs, axis=0)
         return ols_model, bootstrap_se
+
+    elif error_type == 'huber-white':
+        # Huber-White robust standard errors (heteroskedasticity-consistent)
+        robust_model = ols_model.get_robustcov_results(cov_type='HC1')  # HC1 is the most commonly used
+        return ols_model, robust_model.bse
 
     else:
         # Default OLS model with regular standard errors
