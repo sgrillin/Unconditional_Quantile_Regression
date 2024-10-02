@@ -26,6 +26,10 @@ def rif_quantile(y, tau):
     q_tau = estimate_quantiles(y, tau)
     f_q_tau = kernel_density_estimate(y, q_tau)
 
+    if f_q_tau == 0:
+        raise ValueError(
+            "Density estimate is zero at the quantile. Consider adjusting the kernel bandwidth or check your data distribution.")
+
     # Indicator function for y <= q_tau
     indicator = (y <= q_tau).astype(int)
 
