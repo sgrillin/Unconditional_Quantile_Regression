@@ -28,7 +28,7 @@ def rif_quantile(y, tau):
 
     if f_q_tau == 0:
         raise ValueError(
-            "Density estimate is zero at the quantile. Consider adjusting the kernel bandwidth or check your data distribution.")
+            "Density estimate is zero at the quantile. Adjust the kernel bandwidth or check your data distribution.")
 
     # Indicator function for y <= q_tau
     indicator = (y <= q_tau).astype(int)
@@ -57,10 +57,10 @@ def fit_rif_regression(y, x, tau, error_type='none', n_bootstraps=1000):
     rif_y = rif_quantile(y, tau)
 
     # Add a constant term to the model (intercept)
-    X_const = sm.add_constant(x)
+    x_const = sm.add_constant(x)
 
     # Fit OLS model using statsmodels
-    ols_model = sm.OLS(rif_y, X_const).fit()
+    ols_model = sm.OLS(rif_y, x_const).fit()
 
     # Handle standard error estimation based on the specified error type
     if error_type == 'bootstrap':
@@ -72,16 +72,16 @@ def fit_rif_regression(y, x, tau, error_type='none', n_bootstraps=1000):
             # Resample data with replacement
             bootstrap_indices = np.random.choice(range(n), size=n, replace=True)
 
-            # Resample the outcome (y) and covariates (X)
+            # Resample the outcome (y) and covariates (x)
             if isinstance(x, pd.DataFrame):
-                X_bootstrap = x.iloc[bootstrap_indices, :]
+                x_bootstrap = x.iloc[bootstrap_indices, :]
             else:
-                X_bootstrap = x[bootstrap_indices]
+                x_bootstrap = x[bootstrap_indices]
 
             y_bootstrap = y[bootstrap_indices]
 
             # Fit OLS model on the bootstrap sample
-            bootstrap_model = sm.OLS(rif_quantile(y_bootstrap, tau), sm.add_constant(X_bootstrap)).fit()
+            bootstrap_model = sm.OLS(rif_quantile(y_bootstrap, tau), sm.add_constant(x_bootstrap)).fit()
             bootstrap_coefs.append(bootstrap_model.params)
 
         # Convert the list of bootstrapped coefficients to a NumPy array
