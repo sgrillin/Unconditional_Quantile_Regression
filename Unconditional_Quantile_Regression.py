@@ -4,17 +4,23 @@ from scipy.stats import gaussian_kde
 import statsmodels.api as sm
 
 # Function to estimate quantiles
+
+
 def estimate_quantiles(y, tau):
     """Estimates the quantile tau of y"""
     return np.percentile(y, tau * 100)
 
 # Kernel Density Estimator function
+
+
 def kernel_density_estimate(y, q_tau):
     """Estimate the density at q_tau using Gaussian kernel density estimator"""
     kde = gaussian_kde(y)
     return kde.evaluate(q_tau)[0]
 
 # RIF function for the given quantile
+
+
 def rif_quantile(y, tau):
     """Compute the RIF for the quantile tau"""
     q_tau = estimate_quantiles(y, tau)
@@ -28,13 +34,13 @@ def rif_quantile(y, tau):
     return rif
 
 
-def fit_rif_regression(y, X, tau, error_type='none', n_bootstraps=1000):
+def fit_rif_regression(y, x, tau, error_type='none', n_bootstraps=1000):
     """
     Fit an OLS regression model for the RIF of a given quantile tau using statsmodels.
 
     Parameters:
         y: Outcome variable (array-like)
-        X: Covariates (DataFrame or array-like)
+        x: Covariates (DataFrame or array-like)
         tau: Quantile (float)
         error_type: Type of standard error estimation ('none', 'huber-white', 'bootstrap')
         n_bootstraps: Number of bootstrap samples (if error_type='bootstrap')
@@ -47,7 +53,7 @@ def fit_rif_regression(y, X, tau, error_type='none', n_bootstraps=1000):
     rif_y = rif_quantile(y, tau)
 
     # Add a constant term to the model (intercept)
-    X_const = sm.add_constant(X)
+    X_const = sm.add_constant(x)
 
     # Fit OLS model using statsmodels
     ols_model = sm.OLS(rif_y, X_const).fit()
@@ -63,10 +69,10 @@ def fit_rif_regression(y, X, tau, error_type='none', n_bootstraps=1000):
             bootstrap_indices = np.random.choice(range(n), size=n, replace=True)
 
             # Resample the outcome (y) and covariates (X)
-            if isinstance(X, pd.DataFrame):
-                X_bootstrap = X.iloc[bootstrap_indices, :]
+            if isinstance(x, pd.DataFrame):
+                X_bootstrap = x.iloc[bootstrap_indices, :]
             else:
-                X_bootstrap = X[bootstrap_indices]
+                X_bootstrap = x[bootstrap_indices]
 
             y_bootstrap = y[bootstrap_indices]
 
